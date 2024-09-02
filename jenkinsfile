@@ -1,36 +1,119 @@
 pipeline {
     agent any
 
+    environment {
+        // Define email recipients
+        EMAIL_RECIPIENTS = 'mithunjet8@gmail.com'
+    }
+
     stages {
         stage('Build') {
             steps {
                 echo 'Building...'
-                sh 'echo "Build step"'
+                // Add your build steps here
+            }
+            post {
+                success {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Build Successful",
+                         body: "The build was successful.\nCheck Jenkins for more details."
+                }
+                failure {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Build Failed",
+                         body: "The build failed.\nCheck Jenkins for more details."
+                }
             }
         }
 
-        stage('Test') {
+        stage('Unit and Integration Tests') {
             steps {
-                echo 'Testing...'
-                sh 'echo "Test step"'
+                echo 'Running unit and integration tests...'
+                // Add your test steps here
+            }
+            post {
+                success {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Tests Successful",
+                         body: "The tests were successful.\nCheck Jenkins for more details."
+                }
+                failure {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Tests Failed",
+                         body: "The tests failed.\nCheck Jenkins for more details."
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Code Analysis') {
             steps {
-                echo 'Deploying...'
-                sh 'echo "Deploy step"'
+                echo 'Running code analysis...'
+                // Add your code analysis steps here
+            }
+            post {
+                success {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Code Analysis Successful",
+                         body: "The code analysis was successful.\nCheck Jenkins for more details."
+                }
+                failure {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Code Analysis Failed",
+                         body: "The code analysis failed.\nCheck Jenkins for more details."
+                }
             }
         }
-    }
 
-    post {
-        success {
-            echo 'Pipeline succeeded!'
+        stage('Security Scan') {
+            steps {
+                echo 'Running security scan...'
+                // Add your security scan steps here
+            }
+            post {
+                success {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Security Scan Successful",
+                         body: "The security scan was successful.\nCheck Jenkins for more details."
+                }
+                failure {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Security Scan Failed",
+                         body: "The security scan failed.\nCheck Jenkins for more details."
+                }
+            }
         }
 
-        failure {
-            echo 'Pipeline failed!'
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Deploying to staging...'
+                // Add your staging deployment steps here
+            }
+            post {
+                success {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Deployment to Staging Successful",
+                         body: "The deployment to staging was successful.\nCheck Jenkins for more details."
+                }
+                failure {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Deployment to Staging Failed",
+                         body: "The deployment to staging failed.\nCheck Jenkins for more details."
+                }
+            }
         }
-    }
-}
+
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Running integration tests on staging...'
+                // Add your staging integration tests here
+            }
+            post {
+                success {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Integration Tests on Staging Successful",
+                         body: "The integration tests on staging were successful.\nCheck Jenkins for more details."
+                }
+                failure {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Integration Tests on Staging Failed",
+                         body: "The integration tests on staging failed
