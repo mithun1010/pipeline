@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Define email recipients
+        
         EMAIL_RECIPIENTS = 'mithunjet8@gmail.com'
     }
 
@@ -10,7 +10,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                // Add your build steps here
+                
             }
             post {
                 success {
@@ -29,7 +29,7 @@ pipeline {
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running unit and integration tests...'
-                // Add your test steps here
+                
             }
             post {
                 success {
@@ -67,7 +67,7 @@ pipeline {
         stage('Security Scan') {
             steps {
                 echo 'Running security scan...'
-                // Add your security scan steps here
+                
             }
             post {
                 success {
@@ -86,7 +86,7 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to staging...'
-                // Add your staging deployment steps here
+                
             }
             post {
                 success {
@@ -105,7 +105,7 @@ pipeline {
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running integration tests on staging...'
-                // Add your staging integration tests here
+               
             }
             post {
                 success {
@@ -124,7 +124,7 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to production...'
-                // Add your production deployment steps here
+                
             }
             post {
                 success {
