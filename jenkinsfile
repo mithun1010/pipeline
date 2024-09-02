@@ -86,10 +86,26 @@ pipeline {
             echo 'Pipeline failed!'
         }
         always {
-            mail to: "${EMAIL_RECIPIENT}",
-                 subject: "Jenkins Pipeline Notification",
-                 body: "Pipeline status: ${currentBuild.currentResult}",
-                 attachLog: true
+            script {
+                def buildStatus = currentBuild.currentResult
+                def emailSubject = "Jenkins Pipeline Notification: ${buildStatus}"
+                def emailBody = "Pipeline status: ${buildStatus}\n\n" +
+                                 "Check the Jenkins build logs for details."
+
+                if (currentBuild.result == 'SUCCESS') {
+                    // Send email after successful builds
+                    mail to: "${EMAIL_RECIPIENT}",
+                         subject: emailSubject,
+                         body: emailBody,
+                         attachLog: true
+                } else if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE') {
+                    // Send email after failed tests or security scans
+                    mail to: "${EMAIL_RECIPIENT}",
+                         subject: emailSubject,
+                         body: emailBody,
+                         attachLog: true
+                }
+            }
         }
     }
 }
