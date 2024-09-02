@@ -116,4 +116,28 @@ pipeline {
                 failure {
                     mail to: "${EMAIL_RECIPIENTS}",
                          subject: "Integration Tests on Staging Failed",
-                         body: "The integration tests on staging failed
+                         body: "The integration tests on staging failed.\nCheck Jenkins for more details."
+                }
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo 'Deploying to production...'
+                // Add your production deployment steps here
+            }
+            post {
+                success {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Deployment to Production Successful",
+                         body: "The deployment to production was successful.\nCheck Jenkins for more details."
+                }
+                failure {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Deployment to Production Failed",
+                         body: "The deployment to production failed.\nCheck Jenkins for more details."
+                }
+            }
+        }
+    }
+}
