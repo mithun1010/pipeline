@@ -25,8 +25,8 @@ pipeline {
                     archiveArtifacts artifacts: '**/target/surefire-reports/*.txt', allowEmptyArchive: true
                     mail to: "${EMAIL_RECIPIENTS}",
                          subject: "Test Results",
-                         body: "The unit and integration tests have completed.\nCheck Jenkins for more details.",
-                         attachLog: true
+                         body: "The unit and integration tests have completed.\nCheck Jenkins for more details and log files.",
+                         attachLog: false // Removed incorrect parameter
                 }
             }
         }
@@ -50,8 +50,8 @@ pipeline {
                     archiveArtifacts artifacts: '**/zap-reports/*.html', allowEmptyArchive: true
                     mail to: "${EMAIL_RECIPIENTS}",
                          subject: "Security Scan Results",
-                         body: "The security scan has completed.\nCheck Jenkins for more details.",
-                         attachLog: true
+                         body: "The security scan has completed.\nCheck Jenkins for more details and log files.",
+                         attachLog: false // Removed incorrect parameter
                 }
             }
         }
@@ -81,3 +81,4 @@ pipeline {
         }
     }
 }
+
