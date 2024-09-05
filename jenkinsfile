@@ -69,11 +69,15 @@ pipeline {
     post {
         always {
             echo 'Sending email notifications...'
-            echo 'emailext attachLog: true,'
-            echo 'to: \'mithunjet8@gmail.com\','
-            echo 'subject: "Pipeline ${currentBuild.fullDisplayName} - ${currentBuild.result}",'
-            echo 'body: "Pipeline finished. Please see the attached logs.",'
-            echo 'attachmentsPattern: \'pipeline.log, zap-report.xml\''
+            emailext(
+                to: 'mithunjet8@gmail.com',
+                subject: "Pipeline ${currentBuild.fullDisplayName} - ${currentBuild.result}",
+                body: "Pipeline finished. Please see the attached logs.",
+                attachmentsPattern: 'pipeline.log, zap-report.xml',
+                attachLog: true,
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+            )
         }
     }
 }
+
