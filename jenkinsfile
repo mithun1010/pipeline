@@ -1,29 +1,43 @@
 pipeline {
     agent any
-
+    
     environment {
         EMAIL_RECIPIENTS = 'mithunjet8@gmail.com'
+        LOG_FILE = 'pipeline-log.txt'
     }
-
+    
+    tools {
+        maven 'Maven 3.x' // Make sure this matches the Maven installation in Jenkins
+    }
+    
     stages {
         stage('Build') {
             steps {
                 echo 'Building with Maven...'
-                sh 'mvn clean install'
+                sh 'mvn clean install > ${LOG_FILE} 2>&1'
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit and integration tests with JUnit...'
-                sh 'mvn test'
+                echo 'Running Unit and Integration Tests with JUnit...'
+                sh 'mvn test >> ${LOG_FILE} 2>&1'
             }
             post {
                 always {
-                    archiveArtifacts artifacts: '**/target/surefire-reports/*.txt', allowEmptyArchive: true
+                    archiveArtifacts artifacts: '${LOG_FILE}', allowEmptyArchive: true
+                }
+                success {
                     mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Test Results",
-                         body: "The unit and integration tests have completed.\nCheck Jenkins for more details and log files."
+                         subject: "Tests Successful",
+                         body: "The unit and integration tests were successful.\nCheck Jenkins for more details.",
+                         attachmentsPattern: '${LOG_FILE}'
+                }
+                failure {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Tests Failed",
+                         body: "The unit and integration tests failed.\nCheck Jenkins for more details.",
+                         attachmentsPattern: '${LOG_FILE}'
                 }
             }
         }
@@ -31,44 +45,59 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 echo 'Running code analysis with SonarQube...'
-                sh 'mvn sonar:sonar'
+                sh 'sonar-scanner >> ${LOG_FILE} 2>&1'
             }
         }
 
         stage('Security Scan') {
             steps {
                 echo 'Running security scan with OWASP ZAP...'
-                sh 'zap-cli quick-scan http://localhost:8080'
+                sh 'zap-cli quick-scan http://your-application-url >> ${LOG_FILE} 2>&1'
             }
             post {
                 always {
-                    archiveArtifacts artifacts: '**/zap-reports/*.html', allowEmptyArchive: true
+                    archiveArtifacts artifacts: '${LOG_FILE}', allowEmptyArchive: true
+                }
+                success {
                     mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Security Scan Results",
-                         body: "The security scan has completed.\nCheck Jenkins for more details and log files."
+                         subject: "Security Scan Successful",
+                         body: "The security scan was successful.\nCheck Jenkins for more details.",
+                         attachmentsPattern: '${LOG_FILE}'
+                }
+                failure {
+                    mail to: "${EMAIL_RECIPIENTS}",
+                         subject: "Security Scan Failed",
+                         body: "The security scan failed.\nCheck Jenkins for more details.",
+                         attachmentsPattern: '${LOG_FILE}'
                 }
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to staging with EC2...'
-                sh 'scp -i my-ec2-key.pem target/my-app.jar ec2-user@staging-ec2-instance:/path/to/deploy'
+                echo 'Deploying to staging with AWS CLI...'
+                sh 'aws s3 sync ./target s3://your-staging-bucket >> ${LOG_FILE} 2>&1'
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running integration tests on staging...'
-                sh 'ssh -i my-ec2-key.pem ec2-user@staging-ec2-instance "mvn test"'
+                echo 'Running integration tests on staging with Selenium...'
+                sh 'selenium test --staging >> ${LOG_FILE} 2>&1'
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to production with EC2...'
-                sh 'scp -i my-ec2-key.pem target/my-app.jar ec2-user@prod-ec2-instance:/path/to/deploy'
+                echo 'Deploying to production with AWS CLI...'
+                sh 'aws s3 sync ./target s3://your-production-bucket >> ${LOG_FILE} 2>&1'
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
