@@ -2,141 +2,81 @@ pipeline {
     agent any
 
     environment {
-        
         EMAIL_RECIPIENTS = 'mithunjet8@gmail.com'
     }
 
     stages {
         stage('Build') {
             steps {
-                echo 'Building...'
-                
-            }
-            post {
-                success {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Build Successful",
-                         body: "The build was successful.\nCheck Jenkins for more details."
-                }
-                failure {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Build Failed",
-                         body: "The build failed.\nCheck Jenkins for more details."
-                }
+                echo 'Building with Maven...'
+                // Assuming Maven is being used for building the project
+                sh 'mvn clean install'
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit and integration tests...'
-                
+                echo 'Running unit and integration tests with JUnit...'
+                // Assuming JUnit is used for running tests
+                sh 'mvn test'
             }
             post {
-                success {
+                always {
+                    archiveArtifacts artifacts: '**/target/surefire-reports/*.txt', allowEmptyArchive: true
                     mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Tests Successful",
-                         body: "The tests were successful.\nCheck Jenkins for more details."
-                }
-                failure {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Tests Failed",
-                         body: "The tests failed.\nCheck Jenkins for more details."
+                         subject: "Test Results",
+                         body: "The unit and integration tests have completed.\nCheck Jenkins for more details.",
+                         attachLog: true
                 }
             }
         }
 
         stage('Code Analysis') {
             steps {
-                echo 'Running code analysis...'
-                // Add your code analysis steps here
-            }
-            post {
-                success {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Code Analysis Successful",
-                         body: "The code analysis was successful.\nCheck Jenkins for more details."
-                }
-                failure {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Code Analysis Failed",
-                         body: "The code analysis failed.\nCheck Jenkins for more details."
-                }
+                echo 'Running code analysis with SonarQube...'
+                // Assuming SonarQube is used for code analysis
+                sh 'mvn sonar:sonar'
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo 'Running security scan...'
-                
+                echo 'Running security scan with OWASP ZAP...'
+                // Assuming OWASP ZAP or a similar tool is used for the security scan
+                sh 'zap-cli quick-scan http://localhost:8080'
             }
             post {
-                success {
+                always {
+                    archiveArtifacts artifacts: '**/zap-reports/*.html', allowEmptyArchive: true
                     mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Security Scan Successful",
-                         body: "The security scan was successful.\nCheck Jenkins for more details."
-                }
-                failure {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Security Scan Failed",
-                         body: "The security scan failed.\nCheck Jenkins for more details."
+                         subject: "Security Scan Results",
+                         body: "The security scan has completed.\nCheck Jenkins for more details.",
+                         attachLog: true
                 }
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to staging...'
-                
-            }
-            post {
-                success {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Deployment to Staging Successful",
-                         body: "The deployment to staging was successful.\nCheck Jenkins for more details."
-                }
-                failure {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Deployment to Staging Failed",
-                         body: "The deployment to staging failed.\nCheck Jenkins for more details."
-                }
+                echo 'Deploying to staging with EC2...'
+                // Assuming deployment to EC2 instance
+                sh 'scp -i my-ec2-key.pem target/my-app.jar ec2-user@staging-ec2-instance:/path/to/deploy'
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running integration tests on staging...'
-               
-            }
-            post {
-                success {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Integration Tests on Staging Successful",
-                         body: "The integration tests on staging were successful.\nCheck Jenkins for more details."
-                }
-                failure {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Integration Tests on Staging Failed",
-                         body: "The integration tests on staging failed.\nCheck Jenkins for more details."
-                }
+                echo 'Running integration tests on staging with JUnit...'
+                // Run integration tests on the staging server
+                sh 'ssh -i my-ec2-key.pem ec2-user@staging-ec2-instance "mvn test"'
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to production...'
-                
-            }
-            post {
-                success {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Deployment to Production Successful",
-                         body: "The deployment to production was successful.\nCheck Jenkins for more details."
-                }
-                failure {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Deployment to Production Failed",
-                         body: "The deployment to production failed.\nCheck Jenkins for more details."
-                }
+                echo 'Deploying to production with EC2...'
+                // Assuming deployment to EC2 production instance
+                sh 'scp -i my-ec2-key.pem target/my-app.jar ec2-user@prod-ec2-instance:/path/to/deploy'
             }
         }
     }
