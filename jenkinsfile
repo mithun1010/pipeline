@@ -9,7 +9,6 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building with Maven...'
-                // Assuming Maven is being used for building the project
                 sh 'mvn clean install'
             }
         }
@@ -17,7 +16,6 @@ pipeline {
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running unit and integration tests with JUnit...'
-                // Assuming JUnit is used for running tests
                 sh 'mvn test'
             }
             post {
@@ -25,8 +23,7 @@ pipeline {
                     archiveArtifacts artifacts: '**/target/surefire-reports/*.txt', allowEmptyArchive: true
                     mail to: "${EMAIL_RECIPIENTS}",
                          subject: "Test Results",
-                         body: "The unit and integration tests have completed.\nCheck Jenkins for more details and log files.",
-                         attachLog: false // Removed incorrect parameter
+                         body: "The unit and integration tests have completed.\nCheck Jenkins for more details and log files."
                 }
             }
         }
@@ -34,7 +31,6 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 echo 'Running code analysis with SonarQube...'
-                // Assuming SonarQube is used for code analysis
                 sh 'mvn sonar:sonar'
             }
         }
@@ -42,7 +38,6 @@ pipeline {
         stage('Security Scan') {
             steps {
                 echo 'Running security scan with OWASP ZAP...'
-                // Assuming OWASP ZAP or a similar tool is used for the security scan
                 sh 'zap-cli quick-scan http://localhost:8080'
             }
             post {
@@ -50,8 +45,7 @@ pipeline {
                     archiveArtifacts artifacts: '**/zap-reports/*.html', allowEmptyArchive: true
                     mail to: "${EMAIL_RECIPIENTS}",
                          subject: "Security Scan Results",
-                         body: "The security scan has completed.\nCheck Jenkins for more details and log files.",
-                         attachLog: false // Removed incorrect parameter
+                         body: "The security scan has completed.\nCheck Jenkins for more details and log files."
                 }
             }
         }
@@ -59,15 +53,13 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to staging with EC2...'
-                // Assuming deployment to EC2 instance
                 sh 'scp -i my-ec2-key.pem target/my-app.jar ec2-user@staging-ec2-instance:/path/to/deploy'
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running integration tests on staging with JUnit...'
-                // Run integration tests on the staging server
+                echo 'Running integration tests on staging...'
                 sh 'ssh -i my-ec2-key.pem ec2-user@staging-ec2-instance "mvn test"'
             }
         }
@@ -75,10 +67,8 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to production with EC2...'
-                // Assuming deployment to EC2 production instance
                 sh 'scp -i my-ec2-key.pem target/my-app.jar ec2-user@prod-ec2-instance:/path/to/deploy'
             }
         }
     }
 }
-
