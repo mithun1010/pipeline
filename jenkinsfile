@@ -19,18 +19,20 @@ pipeline {
             }
             post {
                 success {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Unit and Integration Tests Successful",
-                         body: "The unit and integration tests were successful.\nCheck Jenkins for more details.",
-                         attachLog: true,
-                         attachmentsPattern: "${LOG_FILE}"
+                    emailext(
+                        to: "${EMAIL_RECIPIENTS}",
+                        subject: "Unit and Integration Tests Successful",
+                        body: "The unit and integration tests were successful.\nCheck Jenkins for more details.",
+                        attachmentsPattern: "${LOG_FILE}"
+                    )
                 }
                 failure {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Unit and Integration Tests Failed",
-                         body: "The unit and integration tests failed.\nCheck Jenkins for more details.",
-                         attachLog: true,
-                         attachmentsPattern: "${LOG_FILE}"
+                    emailext(
+                        to: "${EMAIL_RECIPIENTS}",
+                        subject: "Unit and Integration Tests Failed",
+                        body: "The unit and integration tests failed.\nCheck Jenkins for more details.",
+                        attachmentsPattern: "${LOG_FILE}"
+                    )
                 }
             }
         }
@@ -49,18 +51,20 @@ pipeline {
             }
             post {
                 success {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Security Scan Successful",
-                         body: "The security scan was successful.\nCheck Jenkins for more details.",
-                         attachLog: true,
-                         attachmentsPattern: "${LOG_FILE}"
+                    emailext(
+                        to: "${EMAIL_RECIPIENTS}",
+                        subject: "Security Scan Successful",
+                        body: "The security scan was successful.\nCheck Jenkins for more details.",
+                        attachmentsPattern: "${LOG_FILE}"
+                    )
                 }
                 failure {
-                    mail to: "${EMAIL_RECIPIENTS}",
-                         subject: "Security Scan Failed",
-                         body: "The security scan failed.\nCheck Jenkins for more details.",
-                         attachLog: true,
-                         attachmentsPattern: "${LOG_FILE}"
+                    emailext(
+                        to: "${EMAIL_RECIPIENTS}",
+                        subject: "Security Scan Failed",
+                        body: "The security scan failed.\nCheck Jenkins for more details.",
+                        attachmentsPattern: "${LOG_FILE}"
+                    )
                 }
             }
         }
