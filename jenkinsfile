@@ -9,7 +9,7 @@ pipeline {
             steps {
                 echo 'Building...'
                 echo 'Tool: Maven'
-                // Add actual build command here
+               
             }
         }
 
@@ -17,7 +17,7 @@ pipeline {
             steps {
                 echo 'Running unit and integration tests...'
                 echo 'Tool: JUnit'
-                // Add actual test commands here
+         
             }
             post {
                 success {
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 echo 'Running code analysis...'
                 echo 'Tool: SonarQube'
-                // Add actual code analysis commands here
+                
             }
         }
 
@@ -51,7 +51,6 @@ pipeline {
             steps {
                 echo 'Running security scan...'
                 echo 'Tool: OWASP ZAP'
-                // Add actual security scan commands here
             }
             post {
                 success {
@@ -77,7 +76,7 @@ pipeline {
             steps {
                 echo 'Deploying to staging...'
                 echo 'Tool: AWS CLI'
-                // Add actual deployment commands here
+              
             }
         }
 
@@ -85,7 +84,7 @@ pipeline {
             steps {
                 echo 'Running integration tests on staging...'
                 echo 'Tool: Custom Test Suite'
-                // Add actual test commands here
+                
             }
         }
 
@@ -93,7 +92,7 @@ pipeline {
             steps {
                 echo 'Deploying to production...'
                 echo 'Tool: AWS CLI'
-                // Add actual deployment commands here
+               
             }
         }
     }
